@@ -45,6 +45,36 @@ const fakeTransaction = (
   modifiedAt: createdAt || faker.date.recent(),
 });
 
+const createTestUser = (balance: number) => ({
+  id: shortid(),
+  uuid: faker.datatype.uuid(),
+  firstName: "Test",
+  lastName: "User",
+  username: "testuser",
+  password: "password",
+  email: "test@example.com",
+  phoneNumber: "555-1234",
+  avatar: "/avatar.png",
+  defaultPrivacyLevel: DefaultPrivacyLevel.public,
+  balance,
+  createdAt: new Date(),
+  modifiedAt: new Date(),
+});
+
+const createTestTransaction = (amount: number): Transaction => ({
+  id: shortid(),
+  uuid: faker.datatype.uuid(),
+  source: shortid(),
+  amount,
+  description: "Test payment",
+  privacyLevel: DefaultPrivacyLevel.public,
+  receiverId: shortid(),
+  senderId: shortid(),
+  status: TransactionStatus.pending,
+  createdAt: new Date(),
+  modifiedAt: new Date(),
+});
+
 describe("Transaction Utils", () => {
   describe("isRequestTransaction", () => {
     let transaction;
@@ -250,72 +280,15 @@ describe("Transaction Utils", () => {
 
     describe("getTransferAmount", () => {
       test("calculates the transfer amount correctly", () => {
-        const sender = {
-          id: "sender-id",
-          uuid: faker.datatype.uuid(),
-          firstName: "John",
-          lastName: "Doe",
-          username: "johndoe",
-          password: "password",
-          email: "john@example.com",
-          phoneNumber: "555-1234",
-          avatar: "/avatar.png",
-          defaultPrivacyLevel: DefaultPrivacyLevel.public,
-          balance: 10000,
-          createdAt: new Date(),
-          modifiedAt: new Date(),
-        };
-
-        const transaction: Transaction = {
-          id: "tx-id",
-          uuid: faker.datatype.uuid(),
-          source: "source-id",
-          amount: 3000,
-          description: "Test payment",
-          privacyLevel: DefaultPrivacyLevel.public,
-          receiverId: "receiver-id",
-          senderId: "sender-id",
-          balanceAtCompletion: 7000,
-          status: TransactionStatus.complete,
-          createdAt: new Date(),
-          modifiedAt: new Date(),
-        };
-
+        const sender = createTestUser(10000);
+        const transaction = createTestTransaction(3000);
         const result = getTransferAmount(sender, transaction);
         expect(result).toBe(7000);
       });
 
       test("returns absolute value when balance is less than amount", () => {
-        const sender = {
-          id: "sender-id",
-          uuid: faker.datatype.uuid(),
-          firstName: "John",
-          lastName: "Doe",
-          username: "johndoe",
-          password: "password",
-          email: "john@example.com",
-          phoneNumber: "555-1234",
-          avatar: "/avatar.png",
-          defaultPrivacyLevel: DefaultPrivacyLevel.public,
-          balance: 1000,
-          createdAt: new Date(),
-          modifiedAt: new Date(),
-        };
-
-        const transaction: Transaction = {
-          id: "tx-id",
-          uuid: faker.datatype.uuid(),
-          source: "source-id",
-          amount: 5000,
-          description: "Test payment",
-          privacyLevel: DefaultPrivacyLevel.public,
-          receiverId: "receiver-id",
-          senderId: "sender-id",
-          status: TransactionStatus.pending,
-          createdAt: new Date(),
-          modifiedAt: new Date(),
-        };
-
+        const sender = createTestUser(1000);
+        const transaction = createTestTransaction(5000);
         const result = getTransferAmount(sender, transaction);
         expect(result).toBe(4000);
       });
@@ -323,104 +296,20 @@ describe("Transaction Utils", () => {
 
     describe("hasSufficientFunds", () => {
       test("returns true when sender has sufficient funds", () => {
-        const sender = {
-          id: "sender-id",
-          uuid: faker.datatype.uuid(),
-          firstName: "John",
-          lastName: "Doe",
-          username: "johndoe",
-          password: "password",
-          email: "john@example.com",
-          phoneNumber: "555-1234",
-          avatar: "/avatar.png",
-          defaultPrivacyLevel: DefaultPrivacyLevel.public,
-          balance: 10000,
-          createdAt: new Date(),
-          modifiedAt: new Date(),
-        };
-
-        const transaction: Transaction = {
-          id: "tx-id",
-          uuid: faker.datatype.uuid(),
-          source: "source-id",
-          amount: 5000,
-          description: "Test payment",
-          privacyLevel: DefaultPrivacyLevel.public,
-          receiverId: "receiver-id",
-          senderId: "sender-id",
-          status: TransactionStatus.pending,
-          createdAt: new Date(),
-          modifiedAt: new Date(),
-        };
-
+        const sender = createTestUser(10000);
+        const transaction = createTestTransaction(5000);
         expect(hasSufficientFunds(sender, transaction)).toBe(true);
       });
 
       test("returns false when sender has insufficient funds", () => {
-        const sender = {
-          id: "sender-id",
-          uuid: faker.datatype.uuid(),
-          firstName: "John",
-          lastName: "Doe",
-          username: "johndoe",
-          password: "password",
-          email: "john@example.com",
-          phoneNumber: "555-1234",
-          avatar: "/avatar.png",
-          defaultPrivacyLevel: DefaultPrivacyLevel.public,
-          balance: 1000,
-          createdAt: new Date(),
-          modifiedAt: new Date(),
-        };
-
-        const transaction: Transaction = {
-          id: "tx-id",
-          uuid: faker.datatype.uuid(),
-          source: "source-id",
-          amount: 5000,
-          description: "Test payment",
-          privacyLevel: DefaultPrivacyLevel.public,
-          receiverId: "receiver-id",
-          senderId: "sender-id",
-          status: TransactionStatus.pending,
-          createdAt: new Date(),
-          modifiedAt: new Date(),
-        };
-
+        const sender = createTestUser(1000);
+        const transaction = createTestTransaction(5000);
         expect(hasSufficientFunds(sender, transaction)).toBe(false);
       });
 
       test("returns true when balance equals amount (zero remaining is considered sufficient)", () => {
-        const sender = {
-          id: "sender-id",
-          uuid: faker.datatype.uuid(),
-          firstName: "John",
-          lastName: "Doe",
-          username: "johndoe",
-          password: "password",
-          email: "john@example.com",
-          phoneNumber: "555-1234",
-          avatar: "/avatar.png",
-          defaultPrivacyLevel: DefaultPrivacyLevel.public,
-          balance: 5000,
-          createdAt: new Date(),
-          modifiedAt: new Date(),
-        };
-
-        const transaction: Transaction = {
-          id: "tx-id",
-          uuid: faker.datatype.uuid(),
-          source: "source-id",
-          amount: 5000,
-          description: "Test payment",
-          privacyLevel: DefaultPrivacyLevel.public,
-          receiverId: "receiver-id",
-          senderId: "sender-id",
-          status: TransactionStatus.pending,
-          createdAt: new Date(),
-          modifiedAt: new Date(),
-        };
-
+        const sender = createTestUser(5000);
+        const transaction = createTestTransaction(5000);
         expect(hasSufficientFunds(sender, transaction)).toBe(true);
       });
     });
