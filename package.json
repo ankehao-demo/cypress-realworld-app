@@ -48,7 +48,7 @@
     "react-virtualized": "9.22.5",
     "shortid": "2.2.16",
     "uuid": "8.3.2",
-    "webpack": "5",
+    "webpack": "5.102.1",
     "xstate": "4.38.3",
     "yup": "0.32.11"
   },
