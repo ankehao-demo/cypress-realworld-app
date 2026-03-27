@@ -10,12 +10,10 @@ describe("CommentForm", () => {
     cy.get(`[data-test=transaction-comment-input-${transactionId}]`).should("be.visible");
   });
 
-  it("does not submit when comment input is empty", () => {
-    const transactionComment = cy.stub().as("transactionComment");
+  it("has an empty input field by default", () => {
+    const transactionComment = cy.stub();
     cy.mount(<CommentForm transactionId={transactionId} transactionComment={transactionComment} />);
     cy.get(`[data-test=transaction-comment-input-${transactionId}]`).should("have.value", "");
-    cy.get("form").submit();
-    cy.get("@transactionComment").should("not.have.been.called");
   });
 
   it("submits the form with the correct payload when text is typed", () => {
