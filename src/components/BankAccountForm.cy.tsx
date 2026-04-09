@@ -72,7 +72,7 @@ describe("BankAccountForm", () => {
     );
 
     cy.getBySel("bankaccount-bankName-input").type("AB");
-    cy.getBySel("bankaccount-bankName-input").blur();
+    cy.getBySel("bankaccount-bankName-input").find("input").blur();
     cy.get("#bankaccount-bankName-input-helper-text").should(
       "contain",
       "Must contain at least 5 characters"
@@ -90,7 +90,7 @@ describe("BankAccountForm", () => {
     );
 
     cy.getBySel("bankaccount-routingNumber-input").type("12345");
-    cy.getBySel("bankaccount-routingNumber-input").blur();
+    cy.getBySel("bankaccount-routingNumber-input").find("input").blur();
     cy.get("#bankaccount-routingNumber-input-helper-text").should(
       "contain",
       "Must contain a valid routing number"
@@ -108,7 +108,7 @@ describe("BankAccountForm", () => {
     );
 
     cy.getBySel("bankaccount-accountNumber-input").type("1234");
-    cy.getBySel("bankaccount-accountNumber-input").blur();
+    cy.getBySel("bankaccount-accountNumber-input").find("input").blur();
     cy.get("#bankaccount-accountNumber-input-helper-text").should(
       "contain",
       "Must contain at least 9 digits"
