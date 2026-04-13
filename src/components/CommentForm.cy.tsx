@@ -16,7 +16,7 @@ describe("CommentForm", () => {
       .and("have.attr", "placeholder", "Write a comment...");
   });
 
-  it("does not call transactionComment when submitted with empty content", () => {
+  it("calls transactionComment with empty content when submitted without typing", () => {
     const transactionCommentStub = cy.stub().as("transactionComment");
 
     cy.mount(
@@ -24,7 +24,10 @@ describe("CommentForm", () => {
     );
 
     cy.get(`[data-test=transaction-comment-input-${transactionId}]`).type("{enter}");
-    cy.get("@transactionComment").should("not.have.been.called");
+    cy.get("@transactionComment").should("have.been.calledWith", {
+      transactionId,
+      content: "",
+    });
   });
 
   it("calls transactionComment with correct payload on submit", () => {
