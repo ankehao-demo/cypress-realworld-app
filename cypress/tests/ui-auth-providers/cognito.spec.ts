@@ -61,6 +61,15 @@ if (Cypress.env("cognito_username")) {
       });
 
       it("should navigate to user settings after login", function () {
+        // Complete onboarding to dismiss modal dialog
+        cy.getBySel("user-onboarding-next").click();
+        cy.getBySelLike("bankName-input").type("The Best Bank");
+        cy.getBySelLike("accountNumber-input").type("123456789");
+        cy.getBySelLike("routingNumber-input").type("987654321");
+        cy.getBySelLike("submit").click();
+        cy.getBySel("user-onboarding-dialog-title").should("contain", "Finished");
+        cy.getBySel("user-onboarding-next").click();
+
         if (isMobile()) {
           cy.getBySel("sidenav-toggle").click();
         }
@@ -70,6 +79,15 @@ if (Cypress.env("cognito_username")) {
       });
 
       it("should navigate to bank accounts after login", function () {
+        // Complete onboarding to dismiss modal dialog
+        cy.getBySel("user-onboarding-next").click();
+        cy.getBySelLike("bankName-input").type("The Best Bank");
+        cy.getBySelLike("accountNumber-input").type("123456789");
+        cy.getBySelLike("routingNumber-input").type("987654321");
+        cy.getBySelLike("submit").click();
+        cy.getBySel("user-onboarding-dialog-title").should("contain", "Finished");
+        cy.getBySel("user-onboarding-next").click();
+
         if (isMobile()) {
           cy.getBySel("sidenav-toggle").click();
         }
@@ -121,6 +139,15 @@ if (Cypress.env("cognito_username")) {
       });
 
       it("should navigate to notifications after login", function () {
+        // Complete onboarding to dismiss modal dialog
+        cy.getBySel("user-onboarding-next").click();
+        cy.getBySelLike("bankName-input").type("The Best Bank");
+        cy.getBySelLike("accountNumber-input").type("123456789");
+        cy.getBySelLike("routingNumber-input").type("987654321");
+        cy.getBySelLike("submit").click();
+        cy.getBySel("user-onboarding-dialog-title").should("contain", "Finished");
+        cy.getBySel("user-onboarding-next").click();
+
         if (isMobile()) {
           cy.getBySel("sidenav-toggle").click();
         }

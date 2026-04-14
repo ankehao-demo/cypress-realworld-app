@@ -92,6 +92,8 @@ describe("SignUpForm", () => {
       </MemoryRouter>
     );
 
-    cy.contains("Have an account? Sign In").should("be.visible").and("have.attr", "href", "/signin");
+    cy.contains("Have an account? Sign In")
+      .should("be.visible")
+      .and("have.attr", "href", "/signin");
   });
 });
