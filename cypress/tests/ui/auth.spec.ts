@@ -183,4 +183,81 @@ describe("User Sign-up and Login", function () {
       .and("have.text", "Username or password is invalid");
     cy.visualSnapshot("Sign In, Invalid Username, Username or Password is Invalid");
   });
+
+  it("should login without remember me and session cookie should not have expiry", function () {
+    cy.database("find", "users").then((user: User) => {
+      cy.login(user.username, "s3cret");
+    });
+    cy.location("pathname").should("equal", "/");
+    cy.getCookie("connect.sid").should("exist");
+    cy.getCookie("connect.sid").its("expiry").should("not.exist");
+  });
+
+  it("should redirect unauthenticated user from /user/settings to signin", function () {
+    cy.visit("/user/settings");
+    cy.location("pathname").should("equal", "/signin");
+  });
+
+  it("should redirect unauthenticated user from /bankaccounts to signin", function () {
+    cy.visit("/bankaccounts");
+    cy.location("pathname").should("equal", "/signin");
+  });
+
+  it("should redirect unauthenticated user from /notifications to signin", function () {
+    cy.visit("/notifications");
+    cy.location("pathname").should("equal", "/signin");
+  });
+
+  it("should redirect unauthenticated user from /transaction/new to signin", function () {
+    cy.visit("/transaction/new");
+    cy.location("pathname").should("equal", "/signin");
+  });
+
+  it("should clear session on logout and redirect to signin", function () {
+    cy.database("find", "users").then((user: User) => {
+      cy.login(user.username, "s3cret");
+    });
+    cy.location("pathname").should("equal", "/");
+
+    if (isMobile()) {
+      cy.getBySel("sidenav-toggle").click();
+    }
+    cy.getBySel("sidenav-signout").click();
+    cy.location("pathname").should("eq", "/signin");
+
+    cy.visit("/personal");
+    cy.location("pathname").should("equal", "/signin");
+  });
+
+  it("should persist auth state in localStorage and restore on reload", function () {
+    cy.database("find", "users").then((user: User) => {
+      cy.login(user.username, "s3cret");
+    });
+    cy.location("pathname").should("equal", "/");
+
+    cy.window().its("localStorage").invoke("getItem", "authState").should("exist");
+
+    cy.reload();
+    cy.location("pathname").should("equal", "/");
+    cy.getBySel("sidenav-username").should("be.visible");
+  });
+
+  it("should show signin page elements correctly", function () {
+    cy.visit("/signin");
+    cy.getBySel("signin-username").should("be.visible");
+    cy.getBySel("signin-password").should("be.visible");
+    cy.getBySel("signin-remember-me").should("be.visible");
+    cy.getBySel("signin-submit").should("be.visible");
+    cy.getBySel("signup").should("be.visible").and("contain", "Don't have an account? Sign Up");
+  });
+
+  it("should navigate from signin to signup and back", function () {
+    cy.visit("/signin");
+    cy.getBySel("signup").click();
+    cy.location("pathname").should("equal", "/signup");
+    cy.getBySel("signup-title").should("be.visible");
+
+    cy.contains("Have an account? Sign In").click();
+    cy.location("pathname").should("equal", "/signin");
+  });
 });
