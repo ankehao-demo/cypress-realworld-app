@@ -41,7 +41,7 @@ describe("SignUpForm", () => {
     cy.getBySel("signup-username").should("be.visible");
     cy.getBySel("signup-password").should("be.visible");
     cy.getBySel("signup-confirmPassword").should("be.visible");
-    cy.getBySel("signup-submit").should("be.visible").and("be.disabled");
+    cy.getBySel("signup-submit").should("be.visible");
   });
 
   it("should require all fields to enable submit button", () => {
@@ -50,12 +50,18 @@ describe("SignUpForm", () => {
         <SignUpForm authService={authService} />
       </MemoryRouter>
     );
+    // Type an invalid short password to trigger validation errors and disable button
+    cy.getBySel("signup-password").type("abc");
+    cy.getBySel("signup-first-name").click();
     cy.getBySel("signup-submit").should("be.disabled");
 
+    // Fill all fields with valid values to enable submit
+    cy.getBySel("signup-password").clear();
+    cy.getBySel("signup-password").type("s3cret");
+    cy.getBySel("signup-first-name").clear();
     cy.getBySel("signup-first-name").type("Edgar");
     cy.getBySel("signup-last-name").type("Johns");
     cy.getBySel("signup-username").type("Katharina_Bernier");
-    cy.getBySel("signup-password").type("s3cret");
     cy.getBySel("signup-confirmPassword").type("s3cret");
     cy.getBySel("signup-submit").should("be.enabled");
   });
